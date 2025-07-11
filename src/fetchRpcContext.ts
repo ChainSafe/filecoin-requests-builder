@@ -14,35 +14,22 @@ export type RpcContext = {
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
     const ethZeroAddress = '0x0000000000000000000000000000000000000000';
-    const resEthAccounts = await sendRpcRequest(rpcUrl, {
-        name: 'eth_accounts',
-        params: [],
-    });
-    const ethAddress = resEthAccounts.body.result?.[0];
-    console.log('response', resEthAccounts);
-    if (!ethAddress) {
-        throw new Error('Failed to retrieve ETH address');
-    }
-
     const resBlock = await sendRpcRequest(rpcUrl, {
         name: 'eth_getBlockByNumber',
         params: ['latest', true],
     });
+
+    const transactions = resBlock.body.result?.transactions || [];
+    let ethAddress =
+        transactions.find((tx: any) => tx?.from && !tx.from.startsWith('0xff'))?.from ??
+        transactions[0]?.from;
+
+
     const ethTransactionHash = resBlock.body.result?.transactions?.[0]?.hash || resBlock.body.result?.transactions?.[0];
     if (!ethTransactionHash) {
         throw new Error('Failed to retrieve ETH transaction hash');
     }
-        const blockHash = resBlock.body.result?.hash;
-
-
-    const resFilecoinWallet = await sendRpcRequest(rpcUrl, {
-        name: 'Filecoin.WalletList',
-        params: [],
-    });
-    const filecoinAddress = resFilecoinWallet.body.result?.[0];
-    if (!filecoinAddress) {
-        throw new Error('Failed to retrieve Filecoin address');
-    }
+    const blockHash = resBlock.body.result?.hash;
 
     const resMiners = await sendRpcRequest(rpcUrl, {
         name: 'Filecoin.StateListMiners',
@@ -52,6 +39,22 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
     if (!filecoinMinerId) {
         throw new Error('Failed to retrieve Filecoin miner id');
     }
+
+    const actorsRes = await sendRpcRequest(rpcUrl, {
+        name: "Filecoin.StateListActors",
+        params: [null],
+    });
+    const actorIds: string[] = actorsRes.body.result;
+
+    // filter ID-accounts (f0/t0)
+    const idActors = actorIds.filter(id => /^([ft])0[0-9]+$/.test(id));
+
+    const randomActorId = idActors[0];
+    const keyRes = await sendRpcRequest(rpcUrl, {
+        name: "Filecoin.StateAccountKey",
+        params: [randomActorId, null],
+    });
+    const filecoinAddress = keyRes.body.result;
 
     const resActor = await sendRpcRequest(rpcUrl, {
         name: 'Filecoin.StateLookupID',
