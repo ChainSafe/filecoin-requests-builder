@@ -1,0 +1,28 @@
+{
+  "name": "filecoin-requests-builder",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "test": "vitest"
+  },
+  "files": ["dist"],
+  "keywords": [],
+  "author": "Aleksei Krasnoperov",
+  "description": "Generate real Filecoin and Ethereum JSON-RPC method definitions with up-to-date parameters from live chain state.",
+  "devDependencies": {
+    "eslint": "^9.30.1",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
