@@ -26,15 +26,15 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     //   ],
     // },
     "eth_gasPrice": { params: [] },
-    // "eth_getBalance": { params: [context.ethAddress, "latest"] },
+    "eth_getBalance": { params: [context.ethAddress, "latest"] },
     "eth_getBlockByNumber": { params: ["latest", false] },
     "eth_blockNumber": { params: [] },
-    // "eth_getLogs": { params: [{ fromBlock: "latest", address: context.ethZeroAddress }] },
-    // "eth_getTransactionReceipt": { params: [context.ethTransactionHash] },
-    // "eth_getBlockByHash": { params: [context.ethBlockHash, false] },
-    // "Filecoin.ChainGetTipSetByHeight": { params: [context.filecoinTipsetHeight, null] },
-    // "Filecoin.WalletBalance": { params: [context.filecoinAddress] },
-    // "Filecoin.StateMinerPartitions": { params: [context.filecoinMinerId, 0, null] },
+    "eth_getLogs": { params: [{ fromBlock: "latest", address: context.ethZeroAddress }] },
+    "eth_getTransactionReceipt": { params: [context.ethTransactionHash] },
+    "eth_getBlockByHash": { params: [context.ethBlockHash, false] },
+    "Filecoin.ChainGetTipSetByHeight": { params: [context.filecoinTipsetHeight, null] },
+    "Filecoin.WalletBalance": { params: [context.filecoinAddress] },
+    "Filecoin.StateMinerPartitions": { params: [context.filecoinMinerId, 0, null] },
     // "eth_getTransactionByHash": { params: ["0x5a4bf6970980a9381e6d6c78d96ab278035bbff58c383ffe96a0a2bbc7c02322"] },
     // "eth_getBlockReceipts": { params: ["0x4AD2BC"] },
     // "Filecoin.StateLookupID": {
@@ -62,12 +62,12 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     //   ]],
     // },
     "net_version": { params: [] },
-    // "eth_getTransactionCount": { params: [context.ethAddress, "latest"] },
+    "eth_getTransactionCount": { params: [context.ethAddress, "latest"] },
     // "Filecoin.ChainReadObj": {
     //   params: [{ "/": "bafy2bzacecdcexybh5urgevm3vsqypphvtaphfkbrp5ypailznwsesxex4inc" }],
     // },
     "eth_maxPriorityFeePerGas": { params: [] },
-    // "eth_getStorageAt": { params: [context.ethAddress, "0x0", "latest"] },
+    "eth_getStorageAt": { params: [context.ethAddress, "0x0", "latest"] },
     // "eth_estimateGas": {
     //   params: [
     //     {
@@ -90,8 +90,8 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     //   ]
     // },
     // "Filecoin.MsigGetAvailableBalance": { params: ["f024757", null] },
-    // "Filecoin.StateMinerSectorCount": { params: [context.filecoinActorId, []] },
-    // "Filecoin.StateMinerSectors": { params: [context.filecoinActorId, [], []] },
+    "Filecoin.StateMinerSectorCount": { params: [context.filecoinActorId, []] },
+    "Filecoin.StateMinerSectors": { params: [context.filecoinActorId, [], []] },
     "Filecoin.ChainGetGenesis": { params: [] },
     // "Filecoin.MsigGetPending": { params: ["f024757", null] },
     // "Filecoin.StateCall": {
@@ -107,8 +107,8 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     //   ],
     // },
     "web3_clientVersion": { params: [] },
-    // "Filecoin.MpoolGetNonce": { params: [context.filecoinActorId] },
-    // "Filecoin.StateVerifiedClientStatus": { params: [context.filecoinActorId, []] },
+    "Filecoin.MpoolGetNonce": { params: [context.filecoinActorId] },
+    "Filecoin.StateVerifiedClientStatus": { params: [context.filecoinActorId, []] },
     // "Filecoin.EthGetMessageCidByTransactionHash": {
     //   params: ["0xe1ef31966b8b8eb26bb0bd2d2f37a48afcd0ca55d1b55342bd1dc8543dcbc58f"],
     // },
@@ -132,7 +132,7 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     // },
     "eth_syncing": { params: [] },
     "Filecoin.StateNetworkName": { params: [] },
-    // "eth_getCode": { params: [context.ethAddress, "latest"] },
-    // "Filecoin.StateMinerAvailableBalance": { params: [context.filecoinActorId, []] },
+    "eth_getCode": { params: [context.ethAddress, "latest"] },
+    "Filecoin.StateMinerAvailableBalance": { params: [context.filecoinActorId, []] },
   };
 }
