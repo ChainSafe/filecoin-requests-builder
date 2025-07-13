@@ -11,6 +11,7 @@ export type RpcContext = {
     filecoinActorId: string;
     filecoinTipsetHeight: number;
     filecoinTipsetKey: any[];
+    filecoinMessageCid: {'/': string};
 };
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
@@ -90,6 +91,21 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve latest ETH block hash');
     }
 
+    const parentCid = filecoinTipsetKey?.[0];
+    if (!parentCid) {
+        throw new Error('Tipset block CID not found');
+    }
+
+    const resParentMessages = await sendRpcRequest(rpcUrl, {
+        name: 'Filecoin.ChainGetParentMessages',
+        params: [parentCid],
+    });
+
+    const filecoinMessageCid = resParentMessages.body.result?.[0]?.Cid;
+    if (!filecoinMessageCid) {
+        throw new Error('Failed to retrieve Filecoin message CID');
+    }
+
     return {
         ethAddress,
         ethZeroAddress,
@@ -100,6 +116,7 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         filecoinTipsetHeight,
         ethBlockNumber: blockNumber,
         ethBlockHash: blockHash,
-        filecoinTipsetKey
+        filecoinTipsetKey,
+        filecoinMessageCid
     };
 }

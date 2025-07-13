@@ -55,9 +55,9 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
         },
         "net_version": { params: [] },
         "eth_getTransactionCount": { params: [context.ethAddress, "latest"] },
-        // "Filecoin.ChainReadObj": {
-        //   params: [{ "/": "bafy2bzacecdcexybh5urgevm3vsqypphvtaphfkbrp5ypailznwsesxex4inc" }],
-        // },
+        "Filecoin.ChainReadObj": {
+          params: [context.filecoinMessageCid],
+        },
         "eth_maxPriorityFeePerGas": { params: [] },
         "eth_getStorageAt": { params: [context.ethAddress, "0x0", "latest"] },
         "eth_estimateGas": {
@@ -70,17 +70,14 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
                 },
             ],
         },
-        // "Filecoin.StateSearchMsg": {
-        //   params: [
-        //     [
-        //       { "/": "bafy2bzacec2pdpnwwznkbm44dl7ehuyqu5igtupo7r5ejgmvvnrjiywaauhaw" },
-        //       { "/": "bafy2bzaceb6dxlcrvo27q5zycy7tizq7n7nhf3bm7vrijm56lugxj6fpbbfs4" }
-        //     ],
-        //     { "/": "bafy2bzacec3gjsesbbztd5qcchskbwvhixdyigrrbseztoisknh5t5alwpuua" },
-        //     3000,
-        //     true
-        //   ]
-        // },
+        "Filecoin.StateSearchMsg": {
+          params: [
+            context.filecoinTipsetKey,
+            context.filecoinMessageCid,
+            3000,
+            true
+          ]
+        },
         // "Filecoin.MsigGetAvailableBalance": { params: ["f024757", null] },
         "Filecoin.StateMinerSectorCount": { params: [context.filecoinMinerId, []] },
         "Filecoin.StateMinerSectors": { params: [context.filecoinMinerId, [], []] },
