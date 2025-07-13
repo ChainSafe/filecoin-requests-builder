@@ -10,6 +10,7 @@ export type RpcContext = {
     filecoinMinerId: string;
     filecoinActorId: string;
     filecoinTipsetHeight: number;
+    filecoinTipsetKey: any[];
 };
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
@@ -73,6 +74,12 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve Filecoin tipset height');
     }
 
+    const filecoinTipsetKey = resTipset.body.result?.Cids;
+
+    if (!filecoinTipsetKey || !Array.isArray(filecoinTipsetKey)) {
+        throw new Error('Failed to retrieve Filecoin tipset key');
+    }
+
     const resBlockNumber = await sendRpcRequest(rpcUrl, {
         name: 'eth_blockNumber',
         params: [],
@@ -93,5 +100,6 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         filecoinTipsetHeight,
         ethBlockNumber: blockNumber,
         ethBlockHash: blockHash,
+        filecoinTipsetKey
     };
 }

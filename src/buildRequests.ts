@@ -37,30 +37,22 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
     "Filecoin.StateMinerPartitions": { params: [context.filecoinMinerId, 0, null] },
     "eth_getTransactionByHash": { params: [context.ethTransactionHash] },
     "eth_getBlockReceipts": { params: [context.ethBlockNumber] },
-    // "Filecoin.StateLookupID": {
-    //   params: [
-    //     context.filecoinActorId,
-    //     [
-    //       { "/": "bafy2bzacebak24xr4mhruizuqcpm4uvwi7exmtubunaa4vactnh35nddpmi3g" },
-    //       { "/": "bafy2bzacedgqq2emhf6prrg4ae3erwmu7vfwnbcgpr6zctqwezwv4vay5mtbq" },
-    //       { "/": "bafy2bzaceb7pqruphtx4x6gxnj6zm2gfmz23xenjtzmbuy37sh5j5uektagua" },
-    //       { "/": "bafy2bzacedleiulhhsstkeb2uqdqxn4gomp6moxqxzqq6fdvft4rfbrkzj3hc" }
-    //     ]
-    //   ]
-    // },
+    "Filecoin.StateLookupID": {
+      params: [
+        context.filecoinAddress,
+        context.filecoinTipsetKey
+      ]
+    },
     "eth_feeHistory": { params: ["0x4", "latest", [25, 50, 75]] }, // 0x4 = blocks count
-    // "Filecoin.ChainGetParentReceipts": {
-    //   params: [{ "/": "bafy2bzaceaj6awy7caq3t52wfzmi4gvotb7hpdfgchuzwgpehvlpxrn7pcnku" }],
-    // },
-    // "Filecoin.ChainGetParentMessages": {
-    //   params: [{ "/": "bafy2bzacecp6xjixmincx7kyqmlgejr3ynp3uz2av4iwnnco6c7si23pfkop6" }],
-    // },
-    // "Filecoin.ChainGetTipSet": {
-    //   params: [[
-    //     { "/": "bafy2bzacec7fhpigs5q22hvfbgsilu7pyxrho3ribd74wka53vezjufpd4u3a" },
-    //     { "/": "bafy2bzacecdokusaktiqx2xnex2o7n6wgidbtxhnweakkn5oiund7hovvf7w2" }
-    //   ]],
-    // },
+    "Filecoin.ChainGetParentReceipts": {
+      params: [context.filecoinTipsetKey[0]],
+    },
+    "Filecoin.ChainGetParentMessages": {
+      params: [context.filecoinTipsetKey[0]],
+    },
+    "Filecoin.ChainGetTipSet": {
+      params: [context.filecoinTipsetKey],
+    },
     "net_version": { params: [] },
     "eth_getTransactionCount": { params: [context.ethAddress, "latest"] },
     // "Filecoin.ChainReadObj": {
