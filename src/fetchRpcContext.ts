@@ -11,8 +11,30 @@ export type RpcContext = {
     filecoinActorId: string;
     filecoinTipsetHeight: number;
     filecoinTipsetKey: any[];
-    filecoinMessageCid: {'/': string};
+    filecoinMessageCid: { '/': string };
+    filecoinMultisigAddress: string;
 };
+
+async function findMultisigAddress(
+    rpcUrl: string,
+    candidates: string[]
+): Promise<string> {
+    for (const address of candidates) {
+        try {
+            const res = await sendRpcRequest(rpcUrl, {
+                name: 'Filecoin.MsigGetAvailableBalance',
+                params: [address, null],
+            });
+
+            if (res.body?.result !== undefined) {
+                return address;
+            }
+        } catch (err) {
+            console.log(`Address ${address} is not a valid multisig address:`, err);
+        }
+    }
+    throw new Error('No valid multisig address found among candidates');
+}
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
     const ethZeroAddress = '0x0000000000000000000000000000000000000000';
@@ -106,6 +128,8 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve Filecoin message CID');
     }
 
+    const filecoinMultisigAddress = await findMultisigAddress(rpcUrl, ['f024757', 't043496']);
+
     return {
         ethAddress,
         ethZeroAddress,
@@ -117,6 +141,7 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         ethBlockNumber: blockNumber,
         ethBlockHash: blockHash,
         filecoinTipsetKey,
-        filecoinMessageCid
+        filecoinMessageCid,
+        filecoinMultisigAddress
     };
 }

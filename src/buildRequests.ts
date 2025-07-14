@@ -78,11 +78,11 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
             true
           ]
         },
-        // "Filecoin.MsigGetAvailableBalance": { params: ["f024757", null] },
+        "Filecoin.MsigGetAvailableBalance": { params: [context.filecoinMultisigAddress, null] },
         "Filecoin.StateMinerSectorCount": { params: [context.filecoinMinerId, []] },
         "Filecoin.StateMinerSectors": { params: [context.filecoinMinerId, [], []] },
         "Filecoin.ChainGetGenesis": { params: [] },
-        // "Filecoin.MsigGetPending": { params: ["f024757", null] },
+        "Filecoin.MsigGetPending": { params: [context.filecoinMultisigAddress, null] },
         "Filecoin.StateCall": {
             params: [
                 {
