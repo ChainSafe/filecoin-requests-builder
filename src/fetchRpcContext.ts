@@ -64,30 +64,6 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve Filecoin miner id');
     }
 
-    const actorsRes = await sendRpcRequest(rpcUrl, {
-        name: "Filecoin.StateListActors",
-        params: [null],
-    });
-    const actorIds: string[] = actorsRes.body.result;
-
-    // filter ID-accounts (f0/t0)
-    const idActors = actorIds.filter(id => /^([ft])0[0-9]+$/.test(id));
-
-    const randomActorId = idActors[0];
-    const keyRes = await sendRpcRequest(rpcUrl, {
-        name: "Filecoin.StateAccountKey",
-        params: [randomActorId, null],
-    });
-    const filecoinAddress = keyRes.body.result;
-
-    const resActor = await sendRpcRequest(rpcUrl, {
-        name: 'Filecoin.StateLookupID',
-        params: [filecoinAddress, null],
-    });
-    const filecoinActorId = resActor.body.result;
-    if (!filecoinActorId) {
-        throw new Error('Failed to retrieve Filecoin actor id');
-    }
     const resTipset = await sendRpcRequest(rpcUrl, {
         name: 'Filecoin.ChainHead',
         params: [],
@@ -122,6 +98,29 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         name: 'Filecoin.ChainGetParentMessages',
         params: [parentCid],
     });
+
+    const actorAddrs: string[] = resParentMessages.body.result?.map((m: any) => m?.Message?.From);
+
+    let filecoinActorId: string = '';
+    let filecoinAddress: string = '';
+
+    for (const addr of actorAddrs) {
+        try {
+            const res = await sendRpcRequest(rpcUrl, {
+                name: 'Filecoin.StateLookupID',
+                params: [addr, null],
+            });
+
+            if (typeof res.body.result === 'string' && res.body.result.startsWith('f0')) {
+                filecoinActorId = res.body.result;
+                filecoinAddress = addr;
+                break;
+            }
+        } catch (err) {
+            console.log('Error looking up ID for address', addr, ':', err);
+            continue;
+        }
+    }
 
     const filecoinMessageCid = resParentMessages.body.result?.[0]?.Cid;
     if (!filecoinMessageCid) {
