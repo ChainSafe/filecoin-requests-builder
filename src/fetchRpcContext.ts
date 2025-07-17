@@ -13,12 +13,18 @@ export type RpcContext = {
     filecoinTipsetKey: any[];
     filecoinMessageCid: { '/': string };
     filecoinMultisigAddress: string;
+    ethContractAddress: string;
+    ethContractCallData: string;
 };
 
 const MAINNET_MINER = 'f01000';
 const TESTNET_MINER = 't01000';
 const MAINNET_MULTISIG = 'f024757';
 const TESTNET_MULTISIG = 't043496';
+const MAINNET_CONTRACT = '0x0c1d86d34e469770339b53613f3a2343accd62cb';
+const TESTNET_CONTRACT = '0x0c1d86d34e469770339b53613f3a2343accd62cb';
+const MAINNET_CONTRACT_CALL_DATA = '0xf8b2cb4f000000000000000000000000cbff24ded1ce6b53712078759233ac8f91ea71b6';
+const TESTNET_CONTRACT_CALL_DATA = '0xf8b2cb4f000000000000000000000000cbff24ded1ce6b53712078759233ac8f91ea71b6';
 
 async function findMultisigAddress(
     rpcUrl: string,
@@ -41,22 +47,51 @@ async function findMultisigAddress(
     throw new Error('No valid multisig address found among candidates');
 }
 
+let cachedNetworkName: string | null = null;
+
+async function getNetworkName(rpcUrl: string): Promise<string> {
+    if (cachedNetworkName) {
+        return cachedNetworkName;
+    }
+    const resNet = await sendRpcRequest(rpcUrl, {
+        name: 'Filecoin.StateNetworkName',
+        params: [],
+    });
+
+    const networkName = resNet.body.result;
+    if (!networkName) {
+        throw new Error('Failed to determine network name');
+    }
+    cachedNetworkName = networkName;
+    return networkName;
+}
+
 async function getMinerId(rpcUrl: string): Promise<string> {
-  const resNet = await sendRpcRequest(rpcUrl, {
-    name: 'Filecoin.StateNetworkName',
-    params: [],
-  });
+    const networkName = await getNetworkName(rpcUrl);
 
-  const networkName = resNet.body.result;
-  if (!networkName) {
-    throw new Error('Failed to determine network name');
-  }
+    if (networkName === 'mainnet') {
+        return MAINNET_MINER;
+    } else {
+        return TESTNET_MINER;
+    }
+}
 
-  if (networkName === 'mainnet') {
-    return MAINNET_MINER;
-  } else {
-    return TESTNET_MINER;
-  }
+async function getContractAddress(rpcUrl: string): Promise<string> {
+    const networkName = await getNetworkName(rpcUrl);
+    if (networkName === 'mainnet') {
+        return MAINNET_CONTRACT;
+    } else {
+        return TESTNET_CONTRACT;
+    }
+}
+
+export async function getContractCallData(rpcUrl: string): Promise<string> {
+    const networkName = await getNetworkName(rpcUrl);
+    if (networkName === 'mainnet') {
+        return MAINNET_CONTRACT_CALL_DATA;
+    } else {
+        return TESTNET_CONTRACT_CALL_DATA;
+    }
 }
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
@@ -157,6 +192,8 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         ethBlockHash: blockHash,
         filecoinTipsetKey,
         filecoinMessageCid,
-        filecoinMultisigAddress
+        filecoinMultisigAddress,
+        ethContractAddress: await getContractAddress(rpcUrl),
+        ethContractCallData: await getContractCallData(rpcUrl),
     };
 }

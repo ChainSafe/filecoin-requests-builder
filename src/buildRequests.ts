@@ -12,19 +12,19 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
         "Filecoin.StateMinerInfo": { params: [context.filecoinMinerId, []] },
         // "Filecoin.StateMarketStorageDeal": { params: [109704581, []] },
         "eth_chainId": { params: [] },
-        // "eth_call": {
-        //   params: [
-        //     {
-        //       data: "0xf8b2cb4f000000000000000000000000cbff24ded1ce6b53712078759233ac8f91ea71b6",
-        //       from: context.ethAddress,
-        //       gas: "0x0",
-        //       gasPrice: "0x0",
-        //       to: "0x0c1d86d34e469770339b53613f3a2343accd62cb",
-        //       value: "0x0",
-        //     },
-        //     "latest",
-        //   ],
-        // },
+        "eth_call": {
+          params: [
+            {
+              data: context.ethContractCallData,
+              from: context.ethAddress,
+              gas: "0x0",
+              gasPrice: "0x0",
+              to: context.ethContractAddress,
+              value: "0x0",
+            },
+            "latest",
+          ],
+        },
         "eth_gasPrice": { params: [] },
         "eth_getBalance": { params: [context.ethAddress, "latest"] },
         "eth_getBlockByNumber": { params: ["latest", false] },
