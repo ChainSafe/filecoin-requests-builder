@@ -15,6 +15,11 @@ export type RpcContext = {
     filecoinMultisigAddress: string;
 };
 
+const MAINNET_MINER = 'f01000';
+const TESTNET_MINER = 't01000';
+const MAINNET_MULTISIG = 'f024757';
+const TESTNET_MULTISIG = 't043496';
+
 async function findMultisigAddress(
     rpcUrl: string,
     candidates: string[]
@@ -36,6 +41,24 @@ async function findMultisigAddress(
     throw new Error('No valid multisig address found among candidates');
 }
 
+async function getMinerId(rpcUrl: string): Promise<string> {
+  const resNet = await sendRpcRequest(rpcUrl, {
+    name: 'Filecoin.StateNetworkName',
+    params: [],
+  });
+
+  const networkName = resNet.body.result;
+  if (!networkName) {
+    throw new Error('Failed to determine network name');
+  }
+
+  if (networkName === 'mainnet') {
+    return MAINNET_MINER;
+  } else {
+    return TESTNET_MINER;
+  }
+}
+
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
     const ethZeroAddress = '0x0000000000000000000000000000000000000000';
     const resBlock = await sendRpcRequest(rpcUrl, {
@@ -55,14 +78,7 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
     }
     const blockHash = resBlock.body.result?.hash;
 
-    const resMiners = await sendRpcRequest(rpcUrl, {
-        name: 'Filecoin.StateListMiners',
-        params: [null],
-    });
-    const filecoinMinerId = resMiners.body.result?.[0];
-    if (!filecoinMinerId) {
-        throw new Error('Failed to retrieve Filecoin miner id');
-    }
+    const filecoinMinerId = await getMinerId(rpcUrl);
 
     const resTipset = await sendRpcRequest(rpcUrl, {
         name: 'Filecoin.ChainHead',
@@ -127,7 +143,7 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve Filecoin message CID');
     }
 
-    const filecoinMultisigAddress = await findMultisigAddress(rpcUrl, ['f024757', 't043496']);
+    const filecoinMultisigAddress = await findMultisigAddress(rpcUrl, [MAINNET_MULTISIG, TESTNET_MULTISIG]);
 
     return {
         ethAddress,
