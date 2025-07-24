@@ -25,6 +25,7 @@ const MAINNET_CONTRACT = '0x0c1d86d34e469770339b53613f3a2343accd62cb';
 const TESTNET_CONTRACT = '0x0c1d86d34e469770339b53613f3a2343accd62cb';
 const MAINNET_CONTRACT_CALL_DATA = '0xf8b2cb4f000000000000000000000000cbff24ded1ce6b53712078759233ac8f91ea71b6';
 const TESTNET_CONTRACT_CALL_DATA = '0xf8b2cb4f000000000000000000000000cbff24ded1ce6b53712078759233ac8f91ea71b6';
+const ETH_ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 async function findMultisigAddress(
     rpcUrl: string,
@@ -95,7 +96,6 @@ export async function getContractCallData(rpcUrl: string): Promise<string> {
 }
 
 export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
-    const ethZeroAddress = '0x0000000000000000000000000000000000000000';
     const resBlock = await sendRpcRequest(rpcUrl, {
         name: 'eth_getBlockByNumber',
         params: ['latest', true],
@@ -182,7 +182,7 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
 
     return {
         ethAddress,
-        ethZeroAddress,
+        ethZeroAddress: ETH_ZERO_ADDRESS,
         ethTransactionHash,
         filecoinAddress,
         filecoinMinerId,
