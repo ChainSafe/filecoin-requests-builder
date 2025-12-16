@@ -37,6 +37,7 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
         "Filecoin.StateMinerPartitions": { params: [context.filecoinMinerId, 0, null] },
         "eth_getTransactionByHash": { params: [context.ethTransactionHash] },
         "eth_getBlockReceipts": { params: [context.ethBlockNumber] },
+        "eth_getBlockReceiptsLimited": { params: [context.ethBlockNumber, 5] },
         "Filecoin.StateLookupID": {
             params: [
                 context.filecoinAddress,
@@ -123,5 +124,6 @@ export function buildRequests(context: RpcContext): RpcMethodMap {
         "Filecoin.StateNetworkName": { params: [] },
         "eth_getCode": { params: [context.ethAddress, "latest"] },
         "Filecoin.StateMinerAvailableBalance": { params: [context.filecoinActorId, []] },
+        "Filecoin.ChainGetEvents": { params: [context.filecoinEventRootCid] },
     };
 }
