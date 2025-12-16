@@ -15,6 +15,7 @@ export type RpcContext = {
     filecoinMultisigAddress: string;
     ethContractAddress: string;
     ethContractCallData: string;
+    filecoinEventRootCid: { '/': string };
 };
 
 const MAINNET_MINER = 'f01000';
@@ -178,6 +179,16 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         throw new Error('Failed to retrieve Filecoin message CID');
     }
 
+    const resParentReceipts = await sendRpcRequest(rpcUrl, {
+        name: 'Filecoin.ChainGetParentReceipts',
+        params: [parentCid],
+    });
+
+    const filecoinEventRootCid = resParentReceipts.body.result?.[0]?.EventsRoot;
+    if (!filecoinEventRootCid) {
+        throw new Error('Failed to retrieve Filecoin event root CID');
+    }
+
     const filecoinMultisigAddress = await findMultisigAddress(rpcUrl, [MAINNET_MULTISIG, TESTNET_MULTISIG]);
 
     return {
@@ -195,5 +206,6 @@ export async function fetchRpcContext(rpcUrl: string): Promise<RpcContext> {
         filecoinMultisigAddress,
         ethContractAddress: await getContractAddress(rpcUrl),
         ethContractCallData: await getContractCallData(rpcUrl),
+        filecoinEventRootCid,
     };
 }
